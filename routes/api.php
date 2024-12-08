@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LandingPageController;
+use App\Http\Controllers\Api\EventsController;
+use App\Http\Controllers\Api\PostsController;
+use App\Http\Controllers\Api\PartnersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +24,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::get('/landing-page', [LandingPageController::class, 'getLandingPageData']);
+//Events
+Route::get('/events/little', [EventsController::class, 'getLittleEventsData']);
+Route::get('/events', [EventsController::class, 'getAllEventsData']);
+Route::get('/events/{slug}', [EventsController::class, 'getOneEventData']);
+//Blogs
+Route::get('/posts/little', [PostsController::class, 'getLittlePostsData']);
+Route::get('/posts', [PostsController::class, 'getAllPostsData']);
+Route::get('/posts/{slug}', [PostsController::class, 'getOnePostData']);
+
+//Partners
+Route::get('/partners/little', [PartnersController::class, 'getLittlePartnersData']);
+Route::get('/partners', [PartnersController::class, 'getAllPartnersData']);
+Route::get('/partners/{id}', [PartnersController::class, 'getOnePartnerData']);
