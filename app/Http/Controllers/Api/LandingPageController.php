@@ -14,6 +14,7 @@ class LandingPageController extends Controller
         // Etkinlikleri getir
         $events = Event::where('status', 1)
             ->select(['id', 'title', 'slug', 'content', 'author_id','event_paths','status', 'published_at', 'event_type'])
+            ->take(3)//ilk 3ü
             ->get();
 
         $formattedEvents = $events->map(function ($event) {
@@ -32,7 +33,9 @@ class LandingPageController extends Controller
 
         // Partner verilerini getir
         $partners = Partner::where('status', 1)
-            ->select(['id', 'company_name', 'logo_url', 'alt_text', 'status','image','partner_type'])
+            ->orderBy('id', 'asc')
+            ->select(['id', 'company_name', 'logo_url', 'alt_text', 'status', 'image', 'partner_type'])
+            ->take(6) //ilk 6
             ->get();
 
         $formattedPartners = $partners->map(function ($partner) {
