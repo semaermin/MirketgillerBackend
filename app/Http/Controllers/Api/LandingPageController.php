@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Partner;
+use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 
 class LandingPageController extends Controller
@@ -31,11 +32,29 @@ class LandingPageController extends Controller
             ];
         });
 
+        // Blog getir
+        $posts = Post::where('status', 1)
+        ->select(['id','title','slug','content','image','author_id','published_at','status',])
+        ->take(3)//ilk 3ü
+        ->get();
+
+        $formattedPosts = $posts->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'content' => $post->content,
+                'author_id'=> $post->author_id,
+                'image' => $post->image,
+                'published_at' => $post->published_at,
+                'status'=> $post->status,
+            ];
+        });
+
         // Partner verilerini getir
         $partners = Partner::where('status', 1)
             ->orderBy('id', 'asc')
             ->select(['id', 'company_name', 'logo_url', 'alt_text', 'status', 'image', 'partner_type'])
-            ->take(6) //ilk 6
             ->get();
 
         $formattedPartners = $partners->map(function ($partner) {
@@ -52,8 +71,9 @@ class LandingPageController extends Controller
 
         // Verileri birleştir ve döndür
         return response()->json([
-            'events' => $formattedEvents,
             'partners' => $formattedPartners,
+            'events' => $formattedEvents,
+            'posts'=> $formattedPosts,
         ]);
     }
 }
