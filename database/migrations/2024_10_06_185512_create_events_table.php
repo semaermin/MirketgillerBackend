@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('content');
-            $table->foreignId('author_id')->constrained()->onDelete('cascade')->nullable;
+            $table->foreignId('author_id')->constrained('users')->onDelete('cascade')->nullable;
             $table->timestamps(); // This creates created_at and updated_at
             $table->timestamp('published_at')->nullable();
             $table->boolean('status')->default(false);
