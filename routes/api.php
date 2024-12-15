@@ -22,18 +22,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware' => \App\Http\Middleware\CorsMiddleware::class], function () {
+    Route::get('/landing-page', [LandingPageController::class, 'getLandingPageData']);
+    //Events
+    Route::get('/events/little', [EventsController::class, 'getLittleEventsData']);
+    Route::get('/events', [EventsController::class, 'getAllEventsData']);
+    Route::get('/events/{slug}', [EventsController::class, 'getOneEventData']);
+    //Blogs
+    Route::get('/posts/little', [PostsController::class, 'getLittlePostsData']);
+    Route::get('/posts', [PostsController::class, 'getAllPostsData']);
+    Route::get('/posts/{slug}', [PostsController::class, 'getOnePostData']);
 
-Route::get('/landing-page', [LandingPageController::class, 'getLandingPageData']);
-//Events
-Route::get('/events/little', [EventsController::class, 'getLittleEventsData']);
-Route::get('/events', [EventsController::class, 'getAllEventsData']);
-Route::get('/events/{slug}', [EventsController::class, 'getOneEventData']);
-//Blogs
-Route::get('/posts/little', [PostsController::class, 'getLittlePostsData']);
-Route::get('/posts', [PostsController::class, 'getAllPostsData']);
-Route::get('/posts/{slug}', [PostsController::class, 'getOnePostData']);
-
-//Partners
-Route::get('/partners/little', [PartnersController::class, 'getLittlePartnersData']);
-Route::get('/partners', [PartnersController::class, 'getAllPartnersData']);
-Route::get('/partners/{id}', [PartnersController::class, 'getOnePartnerData']);
+    //Partners
+    Route::get('/partners/little', [PartnersController::class, 'getLittlePartnersData']);
+    Route::get('/partners', [PartnersController::class, 'getAllPartnersData']);
+    Route::get('/partners/{id}', [PartnersController::class, 'getOnePartnerData']);
+});
