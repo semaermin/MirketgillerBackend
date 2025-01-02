@@ -38,7 +38,7 @@ class PostsController extends Controller
 
     public function getAllPostsData(Request $request): JsonResponse
     {
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 9);
         $posts = Post::where('status', 1)
             ->select(['id', 'title', 'slug', 'content', 'image', 'author_id', 'published_at', 'status'])
             ->paginate($perPage);

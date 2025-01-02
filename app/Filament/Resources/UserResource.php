@@ -37,15 +37,20 @@ class UserResource extends Resource
                 ->same('password'),
                 Forms\Components\Select::make('role')
                     ->options([
-                        'super admin' => 'Super Admin',
-                        'blog admin' => 'Blog Admin',
-                        'normal' => 'Normal Admin',
+                        'blog admin' => 'blog',
+                        'normal' => 'admin',
                     ])
                     ->default('normal') // Varsayılan olarak "user"
                     ->required()
                     ->label('Role'),
                 Forms\Components\FileUpload::make('image')
-                    ->required(),
+                    ->required()
+                    ->rules([
+                        'image', // Yüklenen dosyanın bir fotoğraf olması gerektiğini belirtir
+                        'mimes:jpg,jpeg,png', // Yalnızca .jpg, .jpeg ve .png dosyalarına izin verilir
+                    ])
+                    ->disk('public') // Dosyaların kaydedileceği disk
+                    ->directory('users'), // Hedef dizin
                 Forms\Components\Select::make('departman_id')
                     ->relationship('department', 'name') // İlişkiyi belirtir
                     ->required()

@@ -21,7 +21,7 @@ class ListUsers extends ListRecords
         $user = Auth::user();
 
         // Eğer kullanıcı admin değilse, ana sayfaya yönlendir
-        if (!$user || $user->role !== 'super admin') {
+        if (!$user || $user->role !== 'admin') {
             redirect('/error');
         }
     }

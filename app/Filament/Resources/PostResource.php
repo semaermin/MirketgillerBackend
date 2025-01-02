@@ -25,13 +25,19 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')->required(),
+                Forms\Components\TextInput::make('title')->required()->label('Blog Başlığı'),
                 Forms\Components\Select::make('author_id')
-                    ->relationship('author', 'name')->required(),
-                Forms\Components\MarkdownEditor::make('content')->required(),
-                Forms\Components\FileUpload::make('image')->required(),
-                Forms\Components\DateTimePicker::make('published_at')->label('Published At'),
-                Forms\Components\Toggle::make('status')->label('Status')->default(true),
+                    ->relationship('author', 'name')->required()->label('Yayınlayan kişi'),
+                Forms\Components\MarkdownEditor::make('content')->required()->label('Blog içeriği'),
+                Forms\Components\FileUpload::make('image')->required()->label('Kapak Fotoğrafı')
+                    ->rules([
+                        'image', // Yüklenen dosyanın bir fotoğraf olması gerektiğini belirtir
+                        'mimes:jpg,jpeg,png', // Yalnızca .jpg, .jpeg ve .png dosyalarına izin verilir
+                    ])
+                    ->disk('public') // Dosyaların kaydedileceği disk
+                    ->directory('blogs'), // Hedef dizin
+                Forms\Components\DateTimePicker::make('published_at')->required()->label('Etkinlik tarihi'),
+                Forms\Components\Toggle::make('status')->label('Aktif mi')->default(true),
             ]);
     }
 
@@ -39,11 +45,11 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('author.name')->label('Author')->sortable()->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
-                Tables\Columns\TextColumn::make('published_at')->label('Published At')->dateTime()->sortable(),
-                Tables\Columns\IconColumn::make('status')->boolean()->label('Status')->sortable(),
+                Tables\Columns\TextColumn::make('title')->sortable()->searchable()->label('Blog Başlığı'),
+                Tables\Columns\TextColumn::make('author.name')->label('Yayınlayan Kişi')->sortable()->searchable(),
+                Tables\Columns\ImageColumn::make('image')->label('Kapak Fotoğrafı'),
+                Tables\Columns\TextColumn::make('published_at')->label('Etkinlik Tarihi')->dateTime()->sortable(),
+                Tables\Columns\IconColumn::make('status')->boolean()->label('Aktif mi')->sortable(),
             ])
 
             ->filters([
@@ -79,6 +85,10 @@ class PostResource extends Resource
      */
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        $user = auth()->user();
+        return auth()->check() && (
+            $user->role === 'admin' ||
+            $user->role === 'blog admin'
+        );
     }
 }

@@ -24,16 +24,16 @@ class EventResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')->required(),
+                Forms\Components\TextInput::make('title')->required()->label('Etkinlik Adı'),
                 Forms\Components\Select::make('author_id')
-                ->label('Author')
+                ->label('Yayınlayan Kişi')
                 ->options(User::all()->pluck('full_name', 'id'))
                 ->required(),
-                Forms\Components\MarkdownEditor::make('content')->required(),
-                Forms\Components\Toggle::make('status')->label('Status')->default(true),
-                Forms\Components\DateTimePicker::make('published_at')->label('Published At'),
+                Forms\Components\MarkdownEditor::make('content')->required()->label('Etkinlik içeriği'),
+                Forms\Components\Toggle::make('status')->label('Aktif mi')->default(true),
+                Forms\Components\DateTimePicker::make('published_at')->required()->label('Etkinlik Tarihi'),
                 Forms\Components\Select::make('event_type') // Etkinlik türü seçeneği
-                    ->label('Event Type')
+                    ->label('Etkinlik Türü')
                     ->options([
                         'hackathon' => 'Hackathon',
                         'ideathon' => 'Ideathon',
@@ -50,10 +50,10 @@ class EventResource extends Resource
 
                 Forms\Components\FileUpload::make('event_paths')
                     ->multiple() // Çoklu dosya yükleme
+                    ->required()
                     ->rules([
-                        'dimensions:min_width=200,min_height=200,max_width=2000,max_height=2000', // Fotoğraf boyutlarını sınırlamak
-                        'dimensions:ratio=1/1', // 1:1 oranı
-                        // 'dimensions:ratio=3/2', // 3:2 oranı
+                        'image', // Yüklenen dosyanın bir fotoğraf olması gerektiğini belirtir
+                        'mimes:jpg,jpeg,png', // Yalnızca .jpg, .jpeg ve .png dosyalarına izin verilir
                     ])
                     ->label('Etkinlik Fotoğrafları')
                     ->disk('public') // Dosyaların kaydedileceği disk
@@ -88,15 +88,16 @@ class EventResource extends Resource
 
                     $photoCount = count($photos); // Fotoğraf sayısını al
                     $html = '';
+                    #TODO::BURDA FOTOĞRAF BÜYÜKLÜKLERİNİ AYARLAYAMADIM
                     if ($photoCount === 1) {
                         $html .= '
                         <div style="width: 30px; height: 30px; overflow: hidden; border-radius: 50%; background-color: #17a2b8; display: inline-block; margin-right: 5px;">
-                            <img src="' . asset('storage/' . $photos[0]) . '" alt="Etkinlik Fotoğrafı" style="width: 30px; height: 30px; object-fit: cover; display: block;">
+                            <img src="' . asset('storage/' . $photos[0]) . '" alt="Etkinlik Fotoğrafı" style=" width: 30px !important; height: 30px; object-fit: cover; display: block;">
                         </div>';
                     } else {
                         $html .= '
                         <div style="width: 30px; height: 30px; overflow: hidden; border-radius: 50%; background-color: #17a2b8; display: inline-block; margin-right: 5px;">
-                            <img src="' . asset('storage/' . $photos[0]) . '" alt="Etkinlik Fotoğrafı" style="width: 30px; height: 30px; object-fit: cover; display: block;">
+                            <img src="' . asset('storage/' . $photos[0]) . '" alt="Etkinlik Fotoğrafı" style=" width: 30px !important; height: 30px; object-fit: cover; display: block;">
                         </div>';
                         // Fazladan fotoğraf sayısını göster
                         $html .= '<span style="margin-left: 5px;">+' . ($photoCount - 1) . '</span>'; // 1'den fazlası için sayıyı göster
@@ -140,6 +141,10 @@ class EventResource extends Resource
      */
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        $user = auth()->user();
+        return auth()->check() && (
+            $user->role === 'admin' ||
+            $user->role === 'blog admin'
+        );
     }
 }

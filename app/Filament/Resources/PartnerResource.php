@@ -24,20 +24,24 @@ class PartnerResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('company_name')
-                    ->required(),
+                    ->required()->label('Şirket Adı'),
                 Forms\Components\TextInput::make('logo_url')
                     ->url() // Logo URL'si için 'email' yerine 'url' doğrulaması
-                    ->required(),
+                    ->required()->label('Şirketin Logo Urlsi'),
                 Forms\Components\TextInput::make('alt_text')
-                    ->required(),
+                    ->required()
+                    ->label('Alt Açıklama'),
                 Forms\Components\FileUpload::make('image')
-                    ->required(),
-                Forms\Components\Toggle::make('status')->label('Status')->default(true),
+                    ->required()
+                    ->label('Şirketin Logo Fotosu')
+                    ->disk('public') // Dosyaların kaydedileceği disk
+                    ->directory('partners'), // Hedef dizin
+                Forms\Components\Toggle::make('status')->label('Aktif mi')->default(true),
                 Forms\Components\Select::make('partner_type') // Partner tipini seçmek için
-                    ->label('Partner Type')
+                    ->label('Şirket Tipi')
                     ->options([
                         'sponsor' => 'Sponsor',
-                        'supporter' => 'Supporter',
+                        'supporter' => 'Destekçi',
                     ])
                     ->required()
                     ->default('sponsor'), // Varsayılan değer
@@ -86,6 +90,9 @@ class PartnerResource extends Resource
      */
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        $user = auth()->user();
+        return auth()->check() && (
+            $user->role === 'admin'
+        );
     }
 }

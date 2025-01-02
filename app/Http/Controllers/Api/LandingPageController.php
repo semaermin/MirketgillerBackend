@@ -25,7 +25,7 @@ class LandingPageController extends Controller
                 'slug' => $event->slug,
                 'content' => $event->content,
                 'author_id'=> $event->author_id,
-                'event_paths' => $event->event_paths,
+                'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
                 'published_at' => $event->published_at,
                 'event_type' => $event->event_type,
                 'status'=> $event->status,

@@ -26,9 +26,10 @@ class DepartmentResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->unique() // Benzersiz olması için
-                    ->label('Department Name'),
+                    ->label('Departman Adı'),
                 Forms\Components\Textarea::make('description')
-                    ->label('Description'),
+                    ->required()
+                    ->label('Açıklama'),
             ]);
     }
 
@@ -36,9 +37,9 @@ class DepartmentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Department Name'),
-                Tables\Columns\TextColumn::make('description')->label('Description')->limit(50),
-                Tables\Columns\TextColumn::make('created_at')->label('Created At')->dateTime(),
+                Tables\Columns\TextColumn::make('name')->label('Departman Adı'),
+                Tables\Columns\TextColumn::make('description')->label('Açıklama')->limit(50),
+                Tables\Columns\TextColumn::make('created_at')->label('Oluşturma Tarihi')->dateTime(),
             ])
             ->filters([
                 //
@@ -72,6 +73,10 @@ class DepartmentResource extends Resource
      */
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        $user = auth()->user();
+        return auth()->check() && (
+            $user->role === 'admin' ||
+            $user->role === 'blog admin'
+        );
     }
 }

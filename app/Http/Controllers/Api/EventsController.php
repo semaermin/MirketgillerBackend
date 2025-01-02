@@ -25,7 +25,7 @@ class EventsController extends Controller
                 'title' => $event->title,
                 'slug' => $event->slug,
                 'content' => $event->content,
-                'event_paths' => $event->event_paths,
+                'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
                 'published_at' => $event->published_at,
                 'event_type' => $event->event_type,
             ];
@@ -37,7 +37,7 @@ class EventsController extends Controller
     }
     public function getAllEventsData(Request $request): JsonResponse
     {
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 9);
 
         // Etkinlikleri getir
         $events = Event::where('status', 1)
@@ -51,7 +51,7 @@ class EventsController extends Controller
                 'slug' => $event->slug,
                 'content' => $event->content,
                 'author_id' => $event->author_id,
-                'event_paths' => $event->event_paths,
+                'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
                 'published_at' => $event->published_at,
                 'event_type' => $event->event_type,
                 'status' => $event->status,
@@ -89,7 +89,7 @@ class EventsController extends Controller
             'slug' => $event->slug,
             'content' => $event->content,
             'author_id' => $event->author_id,
-            'event_paths' => $event->event_paths,
+            'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
             'published_at' => $event->published_at,
             'event_type' => $event->event_type,
             'status' => $event->status,

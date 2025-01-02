@@ -4,12 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class About extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        //
+        'misyon',
+        'vizyon',
+        'ulasılankisi',
+        'aktifuye',
+        'ekipuye',
     ];
+    protected $dates = ['deleted_at'];
 }

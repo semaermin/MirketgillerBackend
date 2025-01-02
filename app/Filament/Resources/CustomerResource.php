@@ -27,7 +27,9 @@ class CustomerResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->required()->label('İsim'),
                 Forms\Components\TextInput::make('email')->email()->required(),
-                Forms\Components\FileUpload::make('image')->required(),
+                Forms\Components\FileUpload::make('image')->required()
+                    ->disk('public') // Dosyaların kaydedileceği disk
+                    ->directory('customers'), // Hedef dizin
             ]);
     }
 
@@ -72,6 +74,6 @@ class CustomerResource extends Resource
      */
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        return auth()->check() && auth()->user()->role === '-';
     }
 }

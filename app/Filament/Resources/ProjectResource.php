@@ -24,23 +24,23 @@ class ProjectResource extends Resource
         return $form
         ->schema([
             Forms\Components\TextInput::make('name')
-                ->required(),
+                ->required()->label('Proje Adı'),
             Forms\Components\TextInput::make('link')
                 ->url()
-                ->required(),
+                ->required()->label('Projenin olduğu link url adresi'),
             Forms\Components\TextInput::make('desc')
-                ->required(),
+                ->required()->label('Proje Açıklaması'),
             Forms\Components\FileUpload::make('image')
                 ->required()
+                ->label('Kapak Fotoğrafı')
                 ->image() // Yalnızca resim dosyası kabul edilir
                 ->rules([
-                    'dimensions:min_width=200,min_height=200,max_width=2000,max_height=2000', // Fotoğraf boyutlarını sınırlamak
-                    'dimensions:ratio=1/1', // 1:1 oranı
-                    // 'dimensions:ratio=3/2', // 3:2 oranı
+                    'image', // Yüklenen dosyanın bir fotoğraf olması gerektiğini belirtir
+                    'mimes:jpg,jpeg,png', // Yalnızca .jpg, .jpeg ve .png dosyalarına izin verilir
                 ])
-                ->label('Image (3:2 or 1:1 Ratios)'),
-
-            Forms\Components\Toggle::make('status')->label('Status')->default(true),
+                ->disk('public') // Dosyaların kaydedileceği disk
+                ->directory('projects'), // Hedef dizin
+            Forms\Components\Toggle::make('status')->label('Aktif mi')->default(true),
         ]);
     }
 
@@ -86,6 +86,10 @@ class ProjectResource extends Resource
      */
     protected static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && auth()->user()->role === 'admin';
+        $user = auth()->user();
+        return auth()->check() && (
+            $user->role === 'admin' ||
+            $user->role === 'blog admin'
+        );
     }
 }
