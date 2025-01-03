@@ -23,25 +23,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API Rate Limiting Middleware
-Route::middleware(['throttle:30,1', \App\Http\Middleware\CorsMiddleware::class])->group(function () {
+Route::group(['middleware' => \App\Http\Middleware\CorsMiddleware::class], function () {
     Route::get('/landing-page', [LandingPageController::class, 'getLandingPageData']);
-
-    // Events
+    //Events
     Route::get('/events/little', [EventsController::class, 'getLittleEventsData']);
     Route::get('/events', [EventsController::class, 'getAllEventsData']);
     Route::get('/events/{slug}', [EventsController::class, 'getOneEventData']);
-
-    // Blogs
+    //Blogs
     Route::get('/posts/little', [PostsController::class, 'getLittlePostsData']);
     Route::get('/posts', [PostsController::class, 'getAllPostsData']);
     Route::get('/posts/{slug}', [PostsController::class, 'getOnePostData']);
 
-    // Partners
+    //Partners
     Route::get('/partners/little', [PartnersController::class, 'getLittlePartnersData']);
     Route::get('/partners', [PartnersController::class, 'getAllPartnersData']);
     Route::get('/partners/{id}', [PartnersController::class, 'getOnePartnerData']);
 
-    // About
+    //About
     Route::get('/about', [AboutController::class, 'getAbout']);
 });
