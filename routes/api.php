@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['throttle:30,1', \App\Http\Middleware\CorsMiddleware::class])->group(function () {
+Route::middleware(['throttle:60,1', \App\Http\Middleware\CorsMiddleware::class])->group(function () {
     Route::get('/landing-page', [LandingPageController::class, 'getLandingPageData']);
     //Events
     Route::get('/events/little', [EventsController::class, 'getLittleEventsData']);

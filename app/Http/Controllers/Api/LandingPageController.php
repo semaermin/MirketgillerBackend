@@ -14,29 +14,33 @@ class LandingPageController extends Controller
     {
         // Etkinlikleri getir
         $events = Event::where('status', 1)
-            ->select(['id', 'title', 'slug', 'content', 'author_id','event_paths','status', 'published_at', 'event_type'])
-            ->take(3)//ilk 3ü
+            ->select(['id', 'title', 'slug', 'content', 'author_id', 'event_paths', 'status', 'published_at', 'event_type'])
+            ->take(3) // İlk 3 etkinlik
             ->get();
 
         $formattedEvents = $events->map(function ($event) {
+            // JSON formatındaki event_paths'i diziye çevir
+            $paths = json_decode($event->event_paths, true);
+
             return [
                 'id' => $event->id,
                 'title' => $event->title,
                 'slug' => $event->slug,
                 'content' => $event->content,
-                'author_id'=> $event->author_id,
-                'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
+                'author_id' => $event->author_id,
+                // Tırnakları kaldırılmış dizi
+                'event_paths' => $paths,
                 'published_at' => $event->published_at,
                 'event_type' => $event->event_type,
-                'status'=> $event->status,
+                'status' => $event->status,
             ];
         });
 
         // Blog getir
         $posts = Post::where('status', 1)
-        ->select(['id','title','slug','content','image','author_id','published_at','status',])
-        ->take(3)//ilk 3ü
-        ->get();
+            ->select(['id', 'title', 'slug', 'content', 'image', 'author_id', 'published_at', 'status'])
+            ->take(3) // İlk 3 yazı
+            ->get();
 
         $formattedPosts = $posts->map(function ($post) {
             return [
@@ -44,10 +48,10 @@ class LandingPageController extends Controller
                 'title' => $post->title,
                 'slug' => $post->slug,
                 'content' => $post->content,
-                'author_id'=> $post->author_id,
+                'author_id' => $post->author_id,
                 'image' => $post->image,
                 'published_at' => $post->published_at,
-                'status'=> $post->status,
+                'status' => $post->status,
             ];
         });
 
@@ -64,8 +68,8 @@ class LandingPageController extends Controller
                 'logo_url' => $partner->logo_url,
                 'alt_text' => $partner->alt_text,
                 'partner_type' => $partner->partner_type,
-                'status'=> $partner->status,
-                'image'=>$partner->image,
+                'status' => $partner->status,
+                'image' => $partner->image,
             ];
         });
 
@@ -73,7 +77,7 @@ class LandingPageController extends Controller
         return response()->json([
             'partners' => $formattedPartners,
             'events' => $formattedEvents,
-            'posts'=> $formattedPosts,
+            'posts' => $formattedPosts,
         ]);
     }
 }

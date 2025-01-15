@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\Event;
 
-
 class EventsController extends Controller
 {
     public function getLittleEventsData(): JsonResponse
@@ -15,8 +14,8 @@ class EventsController extends Controller
         // Etkinlikleri getir
         $events = Event::where('status', 1)
             ->orderBy('published_at', 'desc')
-            ->select(['id', 'title', 'slug', 'content','event_paths','published_at', 'event_type'])
-            ->take(3)//ilk 3ü
+            ->select(['id', 'title', 'slug', 'content', 'event_paths', 'published_at', 'event_type'])
+            ->take(3) // İlk 3 etkinlik
             ->get();
 
         $formattedEvents = $events->map(function ($event) {
@@ -25,16 +24,15 @@ class EventsController extends Controller
                 'title' => $event->title,
                 'slug' => $event->slug,
                 'content' => $event->content,
-                'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
+                'event_paths' => json_decode($event->event_paths, true), // JSON array formatı
                 'published_at' => $event->published_at,
                 'event_type' => $event->event_type,
             ];
         });
-        return response()->json([
-            'events'=> $formattedEvents,
-        ]);
 
+        return response()->json(['events' => $formattedEvents]);
     }
+
     public function getAllEventsData(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 9);
@@ -51,7 +49,7 @@ class EventsController extends Controller
                 'slug' => $event->slug,
                 'content' => $event->content,
                 'author_id' => $event->author_id,
-                'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
+                'event_paths' => json_decode($event->event_paths, true), // JSON array formatı
                 'published_at' => $event->published_at,
                 'event_type' => $event->event_type,
                 'status' => $event->status,
@@ -89,7 +87,7 @@ class EventsController extends Controller
             'slug' => $event->slug,
             'content' => $event->content,
             'author_id' => $event->author_id,
-            'event_paths' => '[' . implode(', ', json_decode($event->event_paths, true)) . ']',
+            'event_paths' => json_decode($event->event_paths, true), // JSON array formatı
             'published_at' => $event->published_at,
             'event_type' => $event->event_type,
             'status' => $event->status,
@@ -97,5 +95,4 @@ class EventsController extends Controller
 
         return response()->json(['post' => $formattedEvent]);
     }
-
 }
